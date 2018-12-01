@@ -1,43 +1,37 @@
 package scene;
 
-import java.util.Optional;
-
-import Draw.DrawMenuScene;
-import javafx.event.EventHandler;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import java.util.Optional;
+import Draw.DrawMenuScene;
+import SceneManage.SceneManagement;
+import javafx.application.Platform;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.input.KeyCode;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
+import sound.soundManagement;
 
-public class MenuScene {
+public class MenuScene extends BorderPane {
 	
-	private Canvas canvas, playCanvas, creditCanvas, exitCanvas, enterCanvas;
-	private GraphicsContext gc, playGC, creditGC, exitGC, enterGC;
-	private DrawMenuScene draw;
-	private StackPane centerPane;
-	private VBox buttons, foreground;
+	private static VBox buttons;
+	private static Canvas playCanvas, creditCanvas, exitCanvas, enterCanvas;
+	private static GraphicsContext playGC, creditGC, exitGC, enterGC;
+	private static int count = 1;
 	
 	public MenuScene() {
-		// >>>>>>>>>>>>>>> Menu Scene <<<<<<<<<<<<<<<<<<<<<
-	
-		centerPane = new StackPane();
 		
-		canvas = new Canvas();
-		canvas.setWidth(900);
-		canvas.setHeight(900);
-		gc = canvas.getGraphicsContext2D();
-		gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+		StackPane centerPane = new StackPane();
 		
 		buttons = new VBox();
 		buttons.setSpacing(0);
@@ -57,24 +51,26 @@ public class MenuScene {
 		playGC = playCanvas.getGraphicsContext2D();
 		playGC.setFill(Color.BLACK);
 		playGC.setTextAlign(TextAlignment.CENTER);
-		playGC.setFont(Font.font("Comic Sans MS", 35));
+		playGC.setFont(Font.font("Comic Sans MS", 50));
 		playGC.fillText("PLAY", 200, 50);
+		this.setPlayCanvasAction();
 		
 		creditCanvas = new Canvas(400, 100);
 		creditGC = creditCanvas.getGraphicsContext2D();
 		creditGC.setFill(Color.BLACK);
 		creditGC.setTextAlign(TextAlignment.CENTER);
-		creditGC.setFont(Font.font("Comic Sans MS", 35));
+		creditGC.setFont(Font.font("Comic Sans MS", 50));
 		creditGC.fillText("CREDIT", 210, 50);
+		this.setCreditCanvasAction();
 		
 		exitCanvas = new Canvas(400, 100);
 		exitGC = exitCanvas.getGraphicsContext2D();
 		exitGC.setFill(Color.BLACK);
 		exitGC.setTextAlign(TextAlignment.CENTER);
-		exitGC.setFont(Font.font("Comic Sans MS", 35));
+		exitGC.setFont(Font.font("Comic Sans MS", 50));
 		exitGC.fillText("EXIT", 200, 50);
+		this.setExitCanvasAction();
 		
-		//buttons.getChildren().add(textCanvas);
 		buttons.getChildren().add(gameTitle);
 		buttons.getChildren().add(playCanvas);
 		buttons.getChildren().add(creditCanvas);
@@ -83,7 +79,7 @@ public class MenuScene {
 		buttons.setVisible(false);
 		
 		
-		foreground = new VBox();
+		VBox foreground = new VBox();
 		foreground.setAlignment(Pos.CENTER);
 		foreground.setSpacing(230);
 		foreground.getChildren().add(gameTitle);
@@ -91,189 +87,133 @@ public class MenuScene {
 		
 		enterCanvas = new Canvas(760, 300);
 		enterGC = enterCanvas.getGraphicsContext2D();
-		draw.drawEnter(enterGC);
+		DrawMenuScene.drawEnter(enterGC);
 			
 			
-		centerPane.getChildren().add(canvas);
+		
+		DrawMenuScene.setBG(this);
 		centerPane.getChildren().add(foreground);
 		centerPane.getChildren().add(enterCanvas);
+		this.setCenter(centerPane);
+		
+		soundManagement.music();
 		
 		
-			
-		// >>>>>>>>>>>>>>> Menu Scene <<<<<<<<<<<<<<<<<<<<<
-	}
-
-	public VBox getButtons() {
-		return buttons;
-	}
-
-	public VBox getForeground() {
-		return foreground;
-	}
-
-	public Canvas getCanvas() {
-		return canvas;
-	}
-
-	public Canvas getPlayCanvas() {
-		return playCanvas;
-	}
-
-	public Canvas getCreditCanvas() {
-		return creditCanvas;
-	}
-
-	public Canvas getExitCanvas() {
-		return exitCanvas;
-	}
-
-	public DrawMenuScene getDraw() {
-		return draw;
-	}
-
-	public StackPane getCenterPane() {
-		return centerPane;
 	}
 	
-	public Canvas getEnterCanvas() {
-		return enterCanvas;
+	public static void setMenuAction() {
+		SceneManagement.menuScene.setOnKeyPressed(e -> {
+			if (e.getCode() == KeyCode.ENTER && count == 1) {
+				soundManagement.gun();
+				enterCanvas.setVisible(false);
+				buttons.setVisible(true);
+				count++;
+			} else if (e.getCode() == KeyCode.ESCAPE && count != 1) {
+				enterCanvas.setVisible(true);
+				buttons.setVisible(false);
+				count--;
+			}
+		});
 	}
-
-	public GraphicsContext getGc() {
-		return gc;
+	
+	private void setPlayCanvasAction() {
+		playCanvas.setOnMouseEntered(e -> {
+			playGC.setLineWidth(4);
+			playGC.setStroke(Color.ORANGE);
+			playGC.setFill(Color.WHITE);
+			playGC.setFont(Font.font("Comic Sans MS", 50));
+			playGC.setTextAlign(TextAlignment.CENTER);
+			playGC.fillText("PLAY", 200, 50);
+			playGC.moveTo(80, 20);
+			playGC.lineTo(80, 50);
+			playGC.lineTo(115, 35);
+			playGC.closePath();
+			playGC.stroke();
+		});
+		
+		playCanvas.setOnMouseExited(e -> {
+			playGC.setFill(Color.WHITE);
+			playGC.clearRect(0, 0, 310, 80);
+			playGC.setFill(Color.BLACK);
+			playGC.setFont(Font.font("Comic Sans MS", 50));
+			playGC.setTextAlign(TextAlignment.CENTER);
+			playGC.fillText("PLAY", 200, 50);
+		});
+		
+		playCanvas.setOnMouseClicked(e -> {
+			soundManagement.confirmed();
+			SceneManagement.switchScene(SceneManagement.playScene);
+			soundManagement.stopMusic();
+		});
 	}
-
-	public GraphicsContext getPlayGC() {
-		return playGC;
+	
+	private void setCreditCanvasAction() {
+		creditCanvas.setOnMouseEntered(e -> {
+			creditGC.setLineWidth(4);
+			creditGC.setStroke(Color.ORANGE);
+			creditGC.setFill(Color.WHITE);
+			creditGC.setFont(Font.font("Comic Sans MS", 50));
+			creditGC.setTextAlign(TextAlignment.CENTER);
+			creditGC.fillText("CREDIT", 210, 50);
+			creditGC.moveTo(60, 20);
+			creditGC.lineTo(60, 50);
+			creditGC.lineTo(95, 35);
+			creditGC.closePath();
+			creditGC.stroke();
+		});
+		
+		creditCanvas.setOnMouseExited(e -> {
+			creditGC.setFill(Color.WHITE);
+			creditGC.clearRect(0, 0, 400, 80);
+			creditGC.setFill(Color.BLACK);
+			creditGC.setFont(Font.font("Comic Sans MS", 50));
+			creditGC.setTextAlign(TextAlignment.CENTER);
+			creditGC.fillText("CREDIT", 210, 50);
+		});
+		
+		creditCanvas.setOnMouseClicked(e -> {
+			soundManagement.confirmed();
+			soundManagement.stopMusic();
+			SceneManagement.switchScene(SceneManagement.creditScene);
+		});
 	}
-
-	public GraphicsContext getCreditGC() {
-		return creditGC;
-	}
-
-	public GraphicsContext getExitGC() {
-		return exitGC;
-	}
-
-	public GraphicsContext getEnterGC() {
-		return enterGC;
+	
+	private void setExitCanvasAction() {
+		exitCanvas.setOnMouseEntered(e -> {
+			exitGC.setLineWidth(4);
+			exitGC.setStroke(Color.ORANGE);
+			exitGC.setFill(Color.WHITE);
+			exitGC.setFont(Font.font("Comic Sans MS", 50));
+			exitGC.setTextAlign(TextAlignment.CENTER);
+			exitGC.fillText("EXIT", 200, 50);
+			exitGC.moveTo(80, 20);
+			exitGC.lineTo(80, 50);
+			exitGC.lineTo(115, 35);
+			exitGC.closePath();
+			exitGC.stroke();
+		});
+		
+		exitCanvas.setOnMouseExited(e -> {
+			exitGC.setFill(Color.WHITE);
+			exitGC.clearRect(0, 0, 400, 80);
+			exitGC.setFill(Color.BLACK);
+			exitGC.setFont(Font.font("Comic Sans MS", 50));
+			exitGC.setTextAlign(TextAlignment.CENTER);
+			exitGC.fillText("EXIT", 200, 50);
+		});
+		
+		exitCanvas.setOnMouseClicked(e -> {
+			soundManagement.gun();
+			ButtonType foo = new ButtonType("YES", ButtonBar.ButtonData.OK_DONE);
+			ButtonType bar = new ButtonType("NO", ButtonBar.ButtonData.CANCEL_CLOSE);
+			Alert alert = new Alert(AlertType.CONFIRMATION,
+			        "Are you sure you want to exit the game?", foo, bar);
+			alert.setTitle("Exit");
+			Optional<ButtonType> result = alert.showAndWait();
+			if (result.orElse(bar) == foo) {
+				Platform.exit();
+			}
+		});
 	}
 	
 }
-/*
-menuScene.getPlayCanvas().setOnMouseEntered(new EventHandler<MouseEvent>() {
-	@Override
-	public void handle(MouseEvent me) {
-		
-		
-		menuScene.getPlayGC().setLineWidth(4);
-		menuScene.getPlayGC().setStroke(Color.ORANGE);
-		menuScene.getPlayGC().setFill(Color.WHITE);
-		menuScene.getPlayGC().setFont(Font.font("Comic Sans MS", 35));
-		menuScene.getPlayGC().setTextAlign(TextAlignment.CENTER);
-		menuScene.getPlayGC().fillText("PLAY", 200, 50);
-		menuScene.getPlayGC().moveTo(98, 20);
-		menuScene.getPlayGC().lineTo(98, 50);
-		menuScene.getPlayGC().lineTo(133, 35);
-		menuScene.getPlayGC().closePath();
-		menuScene.getPlayGC().stroke();
-		
-	}
-});
-
-menuScene.getPlayCanvas().setOnMouseExited(new EventHandler<MouseEvent>() {
-	@Override
-	public void handle(MouseEvent me) {
-		menuScene.getPlayGC().setFill(Color.WHITE);
-		menuScene.getPlayGC().clearRect(0, 0, 310, 80);
-		menuScene.getPlayGC().setFill(Color.BLACK);
-		menuScene.getPlayGC().setFont(Font.font("Comic Sans MS", 35));
-		menuScene.getPlayGC().setTextAlign(TextAlignment.CENTER);
-		menuScene.getPlayGC().fillText("PLAY", 200, 50);
-		
-	}
-});
-
-menuScene.getPlayCanvas().setOnMouseClicked(new EventHandler<MouseEvent>() {
-	@Override
-	public void handle(MouseEvent me) {
-		sound.stopMusic();
-		stage.setScene(playScene);
-	}
-});
-
-menuScene.getCreditCanvas().setOnMouseEntered(new EventHandler<MouseEvent>() {
-	@Override
-	public void handle(MouseEvent me) {
-		menuScene.getCreditGC().setLineWidth(4);
-		menuScene.getCreditGC().setStroke(Color.ORANGE);
-		menuScene.getCreditGC().setFill(Color.WHITE);
-		menuScene.getCreditGC().setFont(Font.font("Comic Sans MS", 35));
-		menuScene.getCreditGC().setTextAlign(TextAlignment.CENTER);
-		menuScene.getCreditGC().fillText("CREDIT", 210, 50);
-		menuScene.getCreditGC().moveTo(90, 20);
-		menuScene.getCreditGC().lineTo(90, 50);
-		menuScene.getCreditGC().lineTo(125, 35);
-		menuScene.getCreditGC().closePath();
-		menuScene.getCreditGC().stroke();
-		
-	}
-});
-
-menuScene.getCreditCanvas().setOnMouseExited(new EventHandler<MouseEvent>() {
-	@Override
-	public void handle(MouseEvent me) {
-		menuScene.getCreditGC().setFill(Color.WHITE);
-		menuScene.getCreditGC().clearRect(0, 0, 400, 80);
-		menuScene.getCreditGC().setFill(Color.BLACK);
-		menuScene.getCreditGC().setFont(Font.font("Comic Sans MS", 35));
-		menuScene.getCreditGC().setTextAlign(TextAlignment.CENTER);
-		menuScene.getCreditGC().fillText("CREDIT", 210, 50);
-	}
-});
-
-
-menuScene.getExitCanvas().setOnMouseEntered(new EventHandler<MouseEvent>() {
-	@Override
-	public void handle(MouseEvent me) {
-		menuScene.getExitGC().setLineWidth(4);
-		menuScene.getExitGC().setStroke(Color.ORANGE);
-		menuScene.getExitGC().setFill(Color.WHITE);
-		menuScene.getExitGC().setFont(Font.font("Comic Sans MS", 35));
-		menuScene.getExitGC().setTextAlign(TextAlignment.CENTER);
-		menuScene.getExitGC().fillText("EXIT", 200, 50);
-		menuScene.getExitGC().moveTo(100, 20);
-		menuScene.getExitGC().lineTo(100, 50);
-		menuScene.getExitGC().lineTo(135, 35);
-		menuScene.getExitGC().closePath();
-		menuScene.getExitGC().stroke();
-	}
-});
-
-menuScene.getExitCanvas().setOnMouseExited(new EventHandler<MouseEvent>() {
-	@Override
-	public void handle(MouseEvent me) {
-		menuScene.getExitGC().setFill(Color.WHITE);
-		menuScene.getExitGC().clearRect(0, 0, 400, 80);
-		menuScene.getExitGC().setFill(Color.BLACK);
-		menuScene.getExitGC().setFont(Font.font("Comic Sans MS", 35));
-		menuScene.getExitGC().setTextAlign(TextAlignment.CENTER);
-		menuScene.getExitGC().fillText("EXIT", 200, 50);
-	}
-});
-
-menuScene.getExitCanvas().setOnMouseClicked(new EventHandler<MouseEvent>() {
-	@Override
-	public void handle(MouseEvent me) {
-		sound.gun();
-		ButtonType foo = new ButtonType("YES", ButtonBar.ButtonData.OK_DONE);
-		ButtonType bar = new ButtonType("NO", ButtonBar.ButtonData.CANCEL_CLOSE);
-		Alert alert = new Alert(AlertType.CONFIRMATION,
-		        "Are you sure you want to exit the game?", foo, bar);
-		alert.setTitle("Exit");
-		Optional<ButtonType> result = alert.showAndWait();
-		if (result.orElse(bar) == foo) {
-			stage.close();
-		}
-	}
-}); */

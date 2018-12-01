@@ -1,7 +1,5 @@
 package sound;
 
-import java.nio.file.Paths;
-
 import javafx.animation.Animation;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -9,77 +7,126 @@ import javafx.util.Duration;
 
 public class soundManagement {
 	
-	private MediaPlayer mediaPlayer, gunSound, selectSound, confirmSound;
-	private MediaPlayer cloudVoice, tifaVoice, zackVoice;
+	private static MediaPlayer media, gunSound, selectSound, confirmSound, gameSound, enterSound, enterFightSound;
 	
-	public void music(){
-	    String bip = "C:\\Users\\USER\\AppData\\Local\\Temp\\angel.wav";
-	    Media hit = new Media(Paths.get(bip).toUri().toString());
-	    mediaPlayer = new MediaPlayer(hit);
-	    mediaPlayer.setVolume(0.17);
-	    mediaPlayer.setCycleCount(Animation.INDEFINITE);
-	    mediaPlayer.setStartTime(Duration.seconds(0)); // to be delete
-	    mediaPlayer.setStopTime(Duration.seconds(242)); // to be delete
-	    mediaPlayer.play();
+	public static void enterFightSound() {
+		enterFightSound = new MediaPlayer(new Media(ClassLoader.getSystemResource("enterFightSound.mp3").toString()));
+		enterFightSound.setStartTime(Duration.seconds(0.5));
+		enterFightSound.play();
 	}
 	
-	public void stopMusic() {
-		mediaPlayer.stop();
+	public static void music() {
+		
+		Thread bgMusic = new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				
+					Media sound = new Media(ClassLoader.getSystemResource("angel.wav").toString());
+					media = new MediaPlayer(sound);
+					media.setAutoPlay(true);
+					media.setCycleCount(Animation.INDEFINITE);
+					media.setVolume(0.2);
+					media.play();
+			}
+		});bgMusic.start();
+		
 	}
 	
-	public void gun() {
-		String bip = "C:\\Users\\USER\\AppData\\Local\\Temp\\gun.wav";
-	    Media hit = new Media(Paths.get(bip).toUri().toString());
+	public static void stopMusic() {
+		media.stop();
+	}
+	
+	public static void gun() {
+	    Media hit = new Media(ClassLoader.getSystemResource("gun.wav").toString());
 	    gunSound = new MediaPlayer(hit);
-	    gunSound.setStartTime(Duration.seconds(1.2));
+	    gunSound.setStartTime(Duration.seconds(0.3));
 	    gunSound.setVolume(1);
 	    gunSound.play();
 	}
 	
-	public void charSelect() {
-		String bip = "C:\\Users\\USER\\AppData\\Local\\Temp\\charSelect.wav";
-		Media hit = new Media(Paths.get(bip).toUri().toString());
+	public static void charSelect() {
+		Media hit = new Media(ClassLoader.getSystemResource("charSelect.wav").toString());
 		selectSound = new MediaPlayer(hit);
-		selectSound.setStartTime(Duration.seconds(63.5));
-		selectSound.setStopTime(Duration.seconds(64));
+		selectSound.setStartTime(Duration.seconds(0.35));
+		selectSound.setStopTime(Duration.seconds(1));
+		selectSound.setVolume(0.5);
 		selectSound.play();
 	}
 	
-	public void confirmed() {
-		String bip = "C:\\Users\\USER\\AppData\\Local\\Temp\\charConfirmed.wav";
-		Media hit = new Media(Paths.get(bip).toUri().toString());
+	public static void confirmed() {
+		Media hit = new Media(ClassLoader.getSystemResource("charConfirmed.wav").toString());
 		confirmSound = new MediaPlayer(hit);
 		confirmSound.setStartTime(Duration.seconds(0));
 		confirmSound.play();
 	}
 	
-	public void cloudVoice() {
-		String bip = "C:\\Users\\USER\\AppData\\Local\\Temp\\cloud.wav";
-		Media hit = new Media(Paths.get(bip).toUri().toString());
-		cloudVoice = new MediaPlayer(hit);
-		cloudVoice.setStartTime(Duration.seconds(7));
-		cloudVoice.setVolume(10);
-		cloudVoice.setStopTime(Duration.seconds(8.9));
-		cloudVoice.play();
+	public static void gameSound1() {
+		Thread gameBgSound = new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				Media hit = new Media(ClassLoader.getSystemResource("normal1.wav").toString());
+				gameSound = new MediaPlayer(hit);
+				gameSound.setVolume(0.4);
+				gameSound.setAutoPlay(true);
+				gameSound.setCycleCount(Animation.INDEFINITE);
+				gameSound.setStartTime(Duration.seconds(2.5));
+				gameSound.play();
+				
+			}
+		});gameBgSound.start();
+		
 	}
 	
-	public void tifaVoice() {
-		String bip = "C:\\Users\\USER\\AppData\\Local\\Temp\\Tifa Voice acting.wav";
-		Media hit = new Media(Paths.get(bip).toUri().toString());
-		tifaVoice = new MediaPlayer(hit);
-		tifaVoice.setStartTime(Duration.seconds(4.4));
-		tifaVoice.setVolume(0.5);
-		tifaVoice.setStopTime(Duration.seconds(7));
-		tifaVoice.play();
+	public static void gameSound2() {
+		
+			Thread gameBgSound2 = new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				Media hit = new Media(ClassLoader.getSystemResource("normal2.wav").toString());
+				gameSound = new MediaPlayer(hit);
+				gameSound.setVolume(0.4);
+				gameSound.setAutoPlay(true);
+				gameSound.setCycleCount(Animation.INDEFINITE);
+				gameSound.setStartTime(Duration.seconds(2.5));
+				gameSound.play();
+				
+			}
+		});gameBgSound2.start();
 	}
 	
-	public void zackVoice() {
-		String bip = "C:\\Users\\USER\\AppData\\Local\\Temp\\Zack Fair voice acting reference.wav";
-		Media hit = new Media(Paths.get(bip).toUri().toString());
-		zackVoice = new MediaPlayer(hit);
-		zackVoice.setStartTime(Duration.seconds(22));
-		zackVoice.setVolume(0.2);
-		zackVoice.play();
+	public static void battleSound() {
+		Media hit = new Media(ClassLoader.getSystemResource("fightSound.wav").toString());
+		gameSound = new MediaPlayer(hit);
+		gameSound.setVolume(1);
+		gameSound.setAutoPlay(true);
+		gameSound.setCycleCount(Animation.INDEFINITE);
+		gameSound.setStartTime(Duration.seconds(1));
+		gameSound.play();
+	}
+	
+	public static void bossSound() {
+		Media hit = new Media(ClassLoader.getSystemResource("bSound.wav").toString());
+		gameSound = new MediaPlayer(hit);
+		gameSound.setVolume(1);
+		gameSound.setAutoPlay(true);
+		gameSound.setCycleCount(Animation.INDEFINITE);
+		gameSound.play();
+	}
+	
+	public static void stopGameSound() {
+		gameSound.stop();
+	}
+	
+	public static void enterSound() {
+		Media hit = new Media(ClassLoader.getSystemResource("enterSound.wav").toString());
+		enterSound = new MediaPlayer(hit);
+		enterSound.setStopTime(Duration.seconds(0.7));
+		enterSound.play();
 	}
 	
 }

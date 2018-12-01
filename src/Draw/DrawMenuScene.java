@@ -1,37 +1,44 @@
 package Draw;
 
+
+import javafx.animation.Animation;
 import javafx.animation.AnimationTimer;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaView;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.util.Duration;
+
 
 public class DrawMenuScene extends Canvas{
 	
-	public void drawCity(GraphicsContext gc, String image_path) {
-		Image javafx_logo = new Image(image_path);
-		new AnimationTimer() {
-			double a = 0;
-			double check = gc.getCanvas().getWidth();
-			double d = 0;
-			@Override
-			public void handle(long arg0) {
-				a -= 1;
-				check += 1;
-				gc.drawImage(javafx_logo, a, 0, gc.getCanvas().getWidth()+2000, gc.getCanvas().getHeight());
-				if (check==gc.getCanvas().getWidth()+2000+d) {
-					d = a = -30;
-					check = gc.getCanvas().getWidth();
-					gc.drawImage(javafx_logo, a, 0, gc.getCanvas().getWidth()+2000, gc.getCanvas().getHeight());
-				};
-			}
-		}.start();
+	public static void setBG(BorderPane centerPane) {
+		
+		MediaPlayer test = new MediaPlayer(new Media(ClassLoader.getSystemResource("BG.mp4").toString()));
+		MediaView mm = new MediaView(test);
+		mm.setFitWidth(1540);
+		mm.setFitHeight(1540);
+		mm.setManaged(true);
+		
+		
+		test.setVolume(0);
+		test.setStartTime(Duration.seconds(0.1));
+		test.setStopTime(Duration.seconds(60));
+		test.setAutoPlay(true);
+		test.setCycleCount(Animation.INDEFINITE);
+		test.play();
+		centerPane.getChildren().add(mm);
+		
 		
 	}
 	
 	
-	public void drawEnter(GraphicsContext gc) {
+	public static void drawEnter(GraphicsContext gc) {
 		new AnimationTimer() {
 			double alpha = 0.1;
 			boolean increase = true;
